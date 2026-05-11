@@ -6,8 +6,12 @@ on:
         description: 'ROCm version (e.g., 7.13.0a20260318) or "latest" to auto-detect'
         required: false
         default: 'latest'
+      llamacpp_pr_number:
+        description: 'llama.cpp PR number (e.g. 22673). Auto-generates refs/pull/22673/head. Leave blank to use llamacpp_version below.'
+        required: false
+        default: ''
       llamacpp_version:
-        description: 'Llama.cpp version (tag, branch, commit hash, or PR ref like refs/pull/22673/head) or "latest" for master'
+        description: 'llama.cpp version: "latest"=master, 标签/分支名/commit hash, 或手动填写 refs/pull/22673/head（见下方说明）'
         required: false
         default: 'latest'
 
@@ -117,6 +121,23 @@ jobs:
         echo "/opt/rocm/bin:/opt/rocm/llvm/bin:$PATH" >> $GITHUB_PATH
         echo "LD_LIBRARY_PATH=/opt/rocm/lib:/opt/rocm/lib64:/opt/rocm/llvm/lib:${LD_LIBRARY_PATH:-}" >> $GITHUB_ENV
         echo "CPATH=/opt/rocm/include:${CPATH:-}" >> $GITHUB_ENV
+
+    - name: Resolve llama.cpp version from PR number
+      run: |
+        pr_number="${{ github.event.inputs.llamacpp_pr_number }}"
+        existing_version="${{ env.LLAMACPP_VERSION }}"
+
+        if [ -n "$pr_number" ]; then
+          echo "PR number provided: $pr_number"
+          echo "Generating ref: refs/pull/$pr_number/head"
+          echo "LLAMACPP_VERSION=refs/pull/$pr_number/head" >> $GITHUB_ENV
+        elif [ -n "$existing_version" ] && [ "$existing_version" != "latest" ]; then
+          echo "Using user-specified version: $existing_version"
+          echo "LLAMACPP_VERSION=$existing_version" >> $GITHUB_ENV
+        else
+          echo "Using default: latest (master branch)"
+          echo "LLAMACPP_VERSION=latest" >> $GITHUB_ENV
+        fi
 
     - name: Clone llama.cpp
       run: |
