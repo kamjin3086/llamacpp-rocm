@@ -29,12 +29,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Clean up existing directories
-      run: |
-        [ -d "llama.cpp" ] && rm -rf llama.cpp || true
-        [ -d "/opt/rocm" ] && sudo rm -rf /opt/rocm || true
-        [ -f "rocm.tar.gz" ] && rm -f rocm.tar.gz || true
-
     - name: Install build dependencies
       run: |
         sudo apt update
@@ -47,7 +41,8 @@ jobs:
         rocm_version="${{ env.ROCM_VERSION }}"
         s3_target="gfx1151"
 
-        if [ "$rocm_version" = "latest" ]; then
+        # Empty string or "latest" both mean auto-detect
+        if [ -z "$rocm_version" ] || [ "$rocm_version" = "latest" ]; then
           echo "Auto-detecting latest ROCm version for target: gfx1151"
           s3_response=$(curl -s "https://therock-nightly-tarball.s3.amazonaws.com/?prefix=therock-dist-linux-gfx1151-7")
 
