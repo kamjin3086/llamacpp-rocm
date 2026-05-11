@@ -31,9 +31,9 @@ jobs:
 
     - name: Clean up existing directories
       run: |
-        [ -d "llama.cpp" ] && rm -rf llama.cpp
-        [ -d "/opt/rocm" ] && sudo rm -rf /opt/rocm
-        [ -f "rocm.tar.gz" ] && rm -f rocm.tar.gz
+        [ -d "llama.cpp" ] && rm -rf llama.cpp || true
+        [ -d "/opt/rocm" ] && sudo rm -rf /opt/rocm || true
+        [ -f "rocm.tar.gz" ] && rm -f rocm.tar.gz || true
 
     - name: Install build dependencies
       run: |
@@ -259,6 +259,6 @@ jobs:
     - name: Clean up
       if: always()
       run: |
-        [ -f "rocm.tar.gz" ] && rm -f rocm.tar.gz
-        [ -d "/opt/rocm" ] && sudo rm -rf /opt/rocm
-        [ -d "llama.cpp" ] && rm -rf llama.cpp
+        [ -f "rocm.tar.gz" ] && rm -f rocm.tar.gz || true
+        [ -d "/opt/rocm" ] && sudo rm -rf /opt/rocm || true
+        [ -d "llama.cpp" ] && rm -rf llama.cpp || true
