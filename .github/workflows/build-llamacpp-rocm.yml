@@ -148,7 +148,7 @@ jobs:
           git clone --depth 1 https://github.com/ggml-org/llama.cpp.git
           cd llama.cpp
           git fetch --depth 1 origin "$llamacpp_version"
-          git FETCH_HEAD
+          git checkout FETCH_HEAD
         else
           echo "Cloning llama.cpp version: $llamacpp_version with shallow clone"
           git clone --depth 1 --single-branch --branch "$llamacpp_version" https://github.com/ggml-org/llama.cpp.git
