@@ -248,7 +248,7 @@ jobs:
         retention-days: 30
 
     - name: Upload to Cloudflare R2
-      if: >-
+      if: |
         secrets.R2_ACCOUNT_ID != '' &&
         secrets.R2_ACCESS_KEY_ID != '' &&
         secrets.R2_SECRET_ACCESS_KEY != '' &&
