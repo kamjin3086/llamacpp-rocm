@@ -234,17 +234,19 @@ jobs:
           [ -f "$file" ] && [ ! -L "$file" ] && patchelf --set-rpath '$ORIGIN' "$file" 2>/dev/null || true
         done
 
-    - name: List build artifacts
+    - name: Package build artifacts
       run: |
-        cd llama.cpp/build/bin
-        echo "Build artifacts:"
-        ls -la
+        cd llama.cpp/build
+        ARTIFACT_NAME="llama-ubuntu-rocm-gfx1151-x64-${{ env.DETECTED_ROCM_VERSION }}-${{ env.LLAMACPP_COMMIT_HASH }}.tar.gz"
+        tar -czf "$ARTIFACT_NAME" bin/
+        echo "ARTIFACT_NAME=$ARTIFACT_NAME" >> $GITHUB_ENV
+        ls -lh "$ARTIFACT_NAME"
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: llama-ubuntu-rocm-gfx1151-x64
-        path: llama.cpp/build/bin/
+        path: llama.cpp/build/${{ env.ARTIFACT_NAME }}
         retention-days: 30
 
     - name: Upload to Cloudflare R2
@@ -260,13 +262,11 @@ jobs:
         aws configure set region auto
         aws configure set output_format json
 
-        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-        DEST="llama-rocm/${{ env.DETECTED_ROCM_VERSION }}/${{ env.LLAMACPP_COMMIT_HASH }}-${TIMESTAMP}"
-
-        aws s3 sync llama.cpp/build/bin/ "s3://${R2_BUCKET}/${DEST}/" \
+        aws s3 cp llama.cpp/build/${{ env.ARTIFACT_NAME }} \
+          "s3://${R2_BUCKET}/" \
           --endpoint-url "https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
-        echo "Uploaded to: https://${R2_BUCKET}.r2.dualstack.${R2_ACCOUNT_ID}.cloudflarestorage.com/${DEST}/"
+        echo "Uploaded: ${{ env.ARTIFACT_NAME }}"
 
     - name: Set job outputs
       id: set-outputs
