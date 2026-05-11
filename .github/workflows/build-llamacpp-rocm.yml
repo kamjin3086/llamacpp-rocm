@@ -248,11 +248,7 @@ jobs:
         retention-days: 30
 
     - name: Upload to Cloudflare R2
-      if: |
-        secrets.R2_ACCOUNT_ID != '' &&
-        secrets.R2_ACCESS_KEY_ID != '' &&
-        secrets.R2_SECRET_ACCESS_KEY != '' &&
-        secrets.R2_BUCKET != ''
+      if: secrets.R2_ACCOUNT_ID != '' && secrets.R2_ACCESS_KEY_ID != '' && secrets.R2_SECRET_ACCESS_KEY != '' && secrets.R2_BUCKET != ''
       run: |
         aws configure set aws_access_key_id "${{ secrets.R2_ACCESS_KEY_ID }}"
         aws configure set aws_secret_access_key "${{ secrets.R2_SECRET_ACCESS_KEY }}"
