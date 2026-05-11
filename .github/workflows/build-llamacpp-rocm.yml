@@ -247,6 +247,26 @@ jobs:
         path: llama.cpp/build/bin/
         retention-days: 30
 
+    - name: Upload to Cloudflare R2
+      if: >-
+        secrets.R2_ACCOUNT_ID != '' &&
+        secrets.R2_ACCESS_KEY_ID != '' &&
+        secrets.R2_SECRET_ACCESS_KEY != '' &&
+        secrets.R2_BUCKET != ''
+      run: |
+        aws configure set aws_access_key_id "${{ secrets.R2_ACCESS_KEY_ID }}"
+        aws configure set aws_secret_access_key "${{ secrets.R2_SECRET_ACCESS_KEY }}"
+        aws configure set region auto
+        aws configure set output_format json
+
+        TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+        DEST="llama-rocm/${{ env.DETECTED_ROCM_VERSION }}/${{ env.LLAMACPP_COMMIT_HASH }}-${TIMESTAMP}"
+
+        aws s3 sync llama.cpp/build/bin/ "s3://${{ secrets.R2_BUCKET }}/${DEST}/" \
+          --endpoint-url "https://${{ secrets.R2_ACCOUNT_ID }}.r2.cloudflarestorage.com"
+
+        echo "Uploaded to: https://${{ secrets.R2_BUCKET }}.r2.dualstack.${{ secrets.R2_ACCOUNT_ID }}.cloudflarestorage.com/${DEST}/"
+
     - name: Set job outputs
       id: set-outputs
       run: |
