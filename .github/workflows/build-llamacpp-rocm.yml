@@ -34,7 +34,7 @@ jobs:
 
     - name: Download and extract ROCm
       run: |
-        rocm_version="${{ env.ROCM_VERSION }}"
+        rocm_version="${{ github.event.inputs.rocm_version }}"
         s3_target="gfx1151"
 
         # Empty string or "latest" both mean auto-detect
@@ -271,7 +271,7 @@ jobs:
     - name: Set job outputs
       id: set-outputs
       run: |
-        rocm_version="${DETECTED_ROCM_VERSION:-${{ env.ROCM_VERSION}}}"
+        rocm_version="${DETECTED_ROCM_VERSION:-${{ github.event.inputs.rocm_version }}}"
         echo "rocm_version=$rocm_version" >> $GITHUB_OUTPUT
         echo "llamacpp_commit_hash=${LLAMACPP_COMMIT_HASH}" >> $GITHUB_OUTPUT
 
