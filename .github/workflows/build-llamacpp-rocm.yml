@@ -3,11 +3,11 @@ on:
   workflow_dispatch:
     inputs:
       rocm_version:
-        description: 'ROCm version (e.g., 7.13.0a20260318) or "latest" to auto-detect'
+        description: 'ROCm version or "latest". Source: https://therock-nightly-tarball.s3.amazonaws.com/?prefix=therock-dist-linux-gfx1151-7 (copy the version between "gfx1151-" and ".tar.gz", e.g., 7.13.0a20260318).'
         required: false
         default: 'latest'
       llamacpp_version:
-        description: 'llama.cpp version: "latest"(=master)/PR号(如22673)/标签/分支/commit hash/refs/pull/xxx/head'
+        description: 'llama.cpp ref or "latest": PR number (https://github.com/ggml-org/llama.cpp/pulls), tag (https://github.com/ggml-org/llama.cpp/tags), branch (https://github.com/ggml-org/llama.cpp/branches), commit hash (https://github.com/ggml-org/llama.cpp/commits/master), or refs/pull/<number>/head.'
         required: false
         default: 'latest'
 
